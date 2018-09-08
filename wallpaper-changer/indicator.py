@@ -9,11 +9,12 @@ from gi.repository import AppIndicator3 as appindicator
 import json
 import os
 from random import randint
-import urllib
+import urllib.request
 from gi.repository import Notify as notify
 
 
-APPINDICATOR_ID = 'myappindicator'
+APPINDICATOR_ID = 'myAppIndicator'
+
 
 def main():
     appLogo = os.path.dirname(os.path.realpath(__file__)) + "/logo.png"
@@ -49,16 +50,14 @@ def changewallpaper(source):
     data = data[rand]
     wallpaper = data["Image URL"]
     url = "http://" + wallpaper
-    wallPaper = os.path.dirname(os.path.realpath(__file__)) + "/wallpaper.jpg"
-    urllib.urlretrieve(url, wallPaper)
+    wall_paper = os.path.dirname(os.path.realpath(__file__)) + "/wallpaper.jpg"
+    urllib.request.urlretrieve(url,wall_paper)
 
     location = '"' + "file://" + os.path.dirname(os.path.realpath(__file__)) + "/wallpaper.jpg" + '"'
     command = "gsettings set org.gnome.desktop.background picture-uri " + location
     os.system(command)
-    notify.Notification.new("<b>Earth View Wallpaper Changer</b>", "Wallpaper changed successfully", None).show()
+    notify.Notification.new("Earth View Wallpaper Changer", "Wallpaper changed successfully", None).show()
     time.sleep(2)
-    killnotification = "killall notify-osd"
-    os.system(killnotification)
 
 
 if __name__ == "__main__":
