@@ -17,7 +17,7 @@ for x in xrange(1000, 7030): #You should able to run this in parallel, but I don
 		Image = 'https://www.gstatic.com/prettyearth/assets/full/' + x + '.jpg'
 		result.append({'region': Region, 'country': Country, 'map': GMapsURL, 'image': Image})
 	
-	except urllib2.HTTPError, e:
+	except urllib2.HTTPError as e:
 		continue #If the page is 404, then it will skip to the next one
 
 meow = json.dumps(result) #because I love cat...
