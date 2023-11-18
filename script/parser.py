@@ -3,24 +3,40 @@ import json
 from bs4 import BeautifulSoup
 
 result = []
-file = open('output.txt', 'a')
-for x in range(1000, 7030):  # You should able to run this in parallel, but I don't know how to do it
-    x = str(x)
-    try:
-        print("Fetching" + x + " ...")
-        with urllib.request.urlopen('https://earthview.withgoogle.com/') as response:
-            html = response.read()
-            html = BeautifulSoup(html, "lxml")
-            Region = str((html.find("div", class_="content__location__region")).text.encode('utf-8'))
-            Country = str((html.find("div", class_="content__location__country")).text.encode('utf-8'))
-            Everything = html.find("a", id="globe", href=True)
-            GMapsURL = Everything['href']
-            Image = 'https://www.gstatic.com/prettyearth/assets/full/' + x + '.jpg'
-            result.append({'region': Region, 'country': Country, 'map': GMapsURL, 'image': Image})
 
-    except urllib.request.HTTPError as e:
-        continue  # If the page is 404, then it will skip to the next one
+with open('output.txt', 'a') as file:
+    for x in range(1000, 7030):
+        try:
+            print("Fetching " + str(x) + " ...")
+            url = f'https://earthview.withgoogle.com/{x}'
+            with urllib.request.urlopen(url) as response:
+                html = response.read()
+                soup = BeautifulSoup(html, "lxml")
+                
+                region_element = soup.find("div", class_="content__location__region")
+                country_element = soup.find("div", class_="content__location__country")
+                everything = soup.find("a", id="globe", href=True)
+                
+                if region_element:
+                    region = str(region_element.text.encode('utf-8'))
+                else:
+                    region = "N/A"  # or any default value
+                    
+                if country_element:
+                    country = str(country_element.text.encode('utf-8'))
+                else:
+                    country = "N/A"  # or any default value
+                    
+                if everything:
+                    gmaps_url = everything['href']
+                else:
+                    gmaps_url = "N/A"  # or any default value
+                
+                image = 'https://www.gstatic.com/prettyearth/assets/full/' + str(x) + '.jpg'
+                result.append({'region': region, 'country': country, 'map': gmaps_url, 'image': image})
 
-results = json.dumps(result)
-file.write(results)
-file.close()
+        except urllib.request.HTTPError as e:
+            continue
+
+    json_results = json.dumps(result)
+    file.write(json_results)
